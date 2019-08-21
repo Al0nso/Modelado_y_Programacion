@@ -1,0 +1,25 @@
+{
+  "name": "proyecto01",
+  "version": "1.0.0",
+  "description": "We have to develop an app that gives you in real time the weather from different countries given all in a csv file",
+  "main": "./Templates/Tarea01.js",
+  "scripts": {
+    "test": "npm test "
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Al0nso/Modelado_y_Programacion/tree/master/PrimerPeriodo/Tarea01"
+  },
+  "keywords": [
+    "Node.js",
+    "Javascript",
+    "WebService"
+  ],
+  "author": "Al0nso Amayo",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "convert-csv-to-json": "0.0.15",
+    "csvtojson": "^2.0.10",
+    "node-fetch": "^2.6.0"
+  }
+}
