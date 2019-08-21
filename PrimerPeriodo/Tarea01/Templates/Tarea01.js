@@ -1,3 +1,9 @@
+<!--
+Author: Medina Amayo D. Alonso
+Date: 21/08/18
+Version: 1.0
+Why of the code: We have to develop a program to read a csv file and print in real time the weather of the cities.
+-->
 const fetch = require('node-fetch');
 const csv=require('csvtojson');
 

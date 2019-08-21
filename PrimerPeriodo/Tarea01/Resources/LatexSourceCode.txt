@@ -1,0 +1,149 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\usepackage[utf8]{inputenc}
+
+\title{Weather documentation}
+\author{D. Alonso Medina Amayo }
+\date{August 2019}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+We were hired by the airport of Mexico city to give in real time at the moment we run the algorithm the weather on some cities given by them in a csv file. We should be able to manage three thousand requests.
+We will use a Web Service API called OpenWeather (https://openweathermap.org) to get in real time the data so we basically just have to read, process, send the data and get the answer.
+Because the API return us the data in JSON that was initially made for JavaScript we will use Javascript with the help of Node.js to facilitate the work.
+\subsection{Pseudocode}
+Start
+Suppose that we already have the file as it should be.\newline
+read(file.csv)\newline
+parse(csv to JSON) (Change the csv file to an easier and more manageable type)\newline
+Now we have the file on a good format we should be able to access to the data \newline
+while(name != null){ \newline
+    \hspace{3cm} x = OpenWeather.getData(name)\newline
+    \hspace{3cm} print(x)\newline
+    \hspace{3cm} name = name.next (We just print it and pass to the next city)
+}\newline
+End
+\newline
+Now that we already see how it should work lets chech the weak points.
+Notice that should check if we have the file, otherwise our program may die so we could add: \newline
+if( File.csv exist ) \newline
+(All the code from above) \newline
+else \newline
+print(ERROR: No file);\newline
+Also we should check if the data given is the right one that we need so we should check that all the information is right and clear.
+
+\section{Developing}
+Here we will display and explain the code: \newline
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\begin{lstlisting}
+const fetch = require('node-fetch');
+const csv=require('csvtojson');
+
+
+//Here we will read the data from the file given
+//@param none
+//@return a json array with the parsed data from csv file
+async function ReadData() {
+    // Async / await usage
+    const csvFilePath = './Resources/FlyDataset.csv'
+    const jsonArray = await csv().fromFile(csvFilePath)
+       .then(json => json);
+    return jsonArray;
+}
+
+//Here we will get the json from the API the currently weather by Openweather using the url
+//@param geographic coordinates
+//@return json file
+async function askDataApi ( lat, long ){
+    return await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=2381d95daa339cd31a070d31b16caa62`)
+       .then(res => res.json())
+}
+
+//Here we will display one city information
+function displayCity ( jsonFile ){
+    var delayInMilliseconds = 2000; //2 second
+    setTimeout(function() {
+        console.log( `City:${ jsonFile.name }`); //Working
+        console.log( `Main weather:${ jsonFile.weather[0].main }`); //Working
+        console.log( `Description:${ jsonFile.weather[0].description }`);
+        console.log( `Temperature:${ jsonFile.main.temp }` );
+        console.log( `Max:${ jsonFile.main.temp_max }` ); //Working
+        console.log( `Min:${ jsonFile.main.temp_min }` ); //Working
+        console.log( "\***********************************************************************************************************"); //Just to divide cities
+    }, delayInMilliseconds);
+
+}
+//Here we will display all the data to the user
+// If we dont have the data save we ask to the API for it, if we have it we just load it again
+async function processJson(){
+    var jArray = await ReadData(); //The JSON array from reading the .csv file
+    const cache = new Map(); //This dictionary will be our cache
+    let originJson;
+    let destinationJson;
+    for(var i = 0; i < jArray.length; i ++){
+          //On this if-else we will check if we already have the information load or not
+          //Origin
+          let auxo = await cache.get( jArray[i].origin );
+          if( auxo == undefined )
+          {
+                originJson = await askDataApi( jArray[i].origin_latitude, jArray[i].origin_longitude );
+                cache.set( jArray[i].origin, originJson ) ;
+                auxo = originJson;
+          }
+          displayCity( auxo );
+          let auxd = await cache.get( jArray[i].destination ); //The json file of the city, in case it exist
+          //Destination
+          if( auxd == undefined )
+{
+                originJson = await askDataApi( jArray[i].origin_latitude, jArray[i].origin_longitude );
+                cache.set( jArray[i].origin, originJson ) ;
+                auxo = originJson;
+          }
+          displayCity( auxo );
+          let auxd = await cache.get( jArray[i].destination ); //The json file of the city, in case it exist
+          //Destination
+          if( auxd == undefined )
+          {
+                destinationJson = await askDataApi( jArray[i].destination_latitude, jArray[i].destination_longitude );
+                cache.set( jArray[i].origin, destinationJson );
+                auxd = destinationJson;
+          }
+          displayCity( auxd );
+    }
+}
+
+processJson();
+\end{lstlisting}
+
+\section{To develop}
+This program wasn't so hard just like others I've worked but it was kind of a throuble to make it on javascript 'cause personally I can't understand the documentation so i had to ask a lot of friendly developers for some advice. Even though all of this it is a problem that may sound a little bit harder than what it is actually so I would take advantage of this and ask as a pay 90 dls and 25dls  for maintenance
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
+
