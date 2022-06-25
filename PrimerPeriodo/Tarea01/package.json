@@ -20,6 +20,6 @@
   "dependencies": {
     "convert-csv-to-json": "0.0.15",
     "csvtojson": "^2.0.10",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.7"
   }
 }
